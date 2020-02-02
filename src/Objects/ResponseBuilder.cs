@@ -24,22 +24,22 @@ namespace MissionControl.Objects
             // ReSharper disable once StringLiteralTypo
             return "Timestamp: " + (Int64)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds + "\n" +
                    "KSP-BuildID: " + Versioning.BuildID + "\n" +
-                   "Response-Type: " + type.ToString().Substring(13) + "\n" +
+                   "Response-Type: " + type + "\n" +
                    "Response-Length: " + response.Length;
         }
 
         public static string Build(MCException e)
         {
-            return GetPrimaryHeader(e.Code) + "\n" + GetBasicHeaders(ResponseType.Error, e.ToString()) + "\n\n" + e + (char) 4;
+            return GetPrimaryHeader(e.Code) + "\n" + GetBasicHeaders(ResponseType.Error, e.ToString()) + "\n\n" + e + Reference.MCS_ENDOFTEXT;
         }
         public static string Build(Exception exception)
         {
             MCException e = new MCException(exception, "MCS_UNKNOWN", "An unknown error has occurred.");
-            return GetPrimaryHeader(e.Code) + "\n" + GetBasicHeaders(ResponseType.Error, e.ToString()) + "\n\n" + e + (char)4;
+            return GetPrimaryHeader(e.Code) + "\n" + GetBasicHeaders(ResponseType.Error, e.ToString()) + "\n\n" + e + Reference.MCS_ENDOFTEXT;
         }
         public static string Build(string code, string content)
         {
-            return GetPrimaryHeader(code) + "\n" + GetBasicHeaders(ResponseType.Normal, content) + "\n\n" + content + (char)4;
+            return GetPrimaryHeader(code) + "\n" + GetBasicHeaders(ResponseType.Normal, content) + "\n\n" + content + Reference.MCS_ENDOFTEXT;
         }
 
     }

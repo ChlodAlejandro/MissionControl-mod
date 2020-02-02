@@ -20,7 +20,7 @@ namespace MissionControl.Configuration
         {
             { "networkPermitted", new ConfigKey("networkPermitted", "Network Permitted", false) },
             { "listenerHost", new ConfigKey("listenerHost", "Listener Host", "127.0.0.1") },
-            { "listenerPort", new ConfigKey("listenerPort", "Listener Port", 8417) }
+            { "listenerPort", new ConfigKey("listenerPort", "Listener Port", (ushort) 8417) }
         };
 
         public static ConfigManager Instance => _instance ?? (_instance = new ConfigManager());

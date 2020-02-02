@@ -34,7 +34,7 @@ namespace MissionControl.IO
         /// <summary>
         /// A list of all MCS connections.
         /// </summary>
-        public List<TcpClient> Clients;
+        public List<TcpClient> Clients = new List<TcpClient>();
         /// <summary>
         /// The command registry to be used for client commands.
         /// </summary>
@@ -63,7 +63,8 @@ namespace MissionControl.IO
         {
             TcpListener = new TcpListener(
                 IPAddress.Parse(ConfigManager.Instance.GetValue<string>("listenerHost")),
-                ConfigManager.Instance.GetValue<short>("listenerPort"));
+                ConfigManager.Instance.GetValue<ushort>("listenerPort"));
+            TcpListener.Start();
 
             Log.I("Started the Mission Control Server.");
             new Thread(ConnectionListener.Instance.ListenForConnections).Start();

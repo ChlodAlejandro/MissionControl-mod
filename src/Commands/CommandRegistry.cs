@@ -8,18 +8,25 @@ namespace MissionControl.Commands
     public class CommandRegistry
     {
 
-        private Dictionary<string, Command> _commands;
+        private readonly Dictionary<string, Command> _commands = new Dictionary<string, Command>();
 
         public Command GetMatchingCommand(string command)
         {
-            return _commands[command];
+            try
+            {
+                return _commands[command.ToLower()];
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public void RegisterCommand(Command command)
         {
             foreach (string alias in command.GetTriggers())
             {
-                _commands.Add(alias, command);
+                _commands.Add(alias.ToLower(), command);
             }
         }
 

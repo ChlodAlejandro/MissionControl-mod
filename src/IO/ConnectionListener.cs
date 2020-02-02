@@ -1,9 +1,9 @@
 ﻿using System;
-using System.IO.Pipes;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using MissionControl.Commands;
+using MissionControl.Objects;
 
 namespace MissionControl.IO
 {
@@ -24,7 +24,7 @@ namespace MissionControl.IO
         public void ListenForConnections()
         {
             Log.I("Listening for connections...");
-            while (MissionControlServer.Instance.AcceptConnections && MissionControlServer.Instance.TcpListener.Server.Connected)
+            while (MissionControlServer.Instance.AcceptConnections)
             {
                 TcpClient connection;
                 try
@@ -55,28 +55,49 @@ namespace MissionControl.IO
         {
             NetworkStream clientStream = client.GetStream();
             UTF8Encoding encoder = new UTF8Encoding();
-            byte[] message = new byte[ushort.MaxValue * 16];
 
             while (client.Connected)
             {
-                int bytesRead;
+                bool typing = true;
+                int bytesRead = 0;
+                string cmd = "";
 
-                try
+                while (true)
                 {
-                    bytesRead = clientStream.Read(message, 0, ushort.MaxValue * 16);
-                }
-                catch (Exception e)
-                {
-                    Log.E(e, "Error reading message.");
-                    break;
+                    byte[] buffer = new byte[1];
+                    try
+                    {
+                        bytesRead += clientStream.Read(buffer, 0, buffer.Length);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.E(e, "Error reading message.");
+                        break;
+                    }
+
+                    // DEBUG
+                    Log.I(encoder.GetString(buffer));
+
+                    if (bytesRead == 0)
+                    {
+                        client.Close();
+                        return;
+                    }
+                    else if (encoder.GetString(buffer) == "\n")
+                    {
+                        if (cmd[cmd.Length - 1] == '\r')
+                            cmd = cmd.Substring(0, cmd.Length - 1);
+                        break;
+                    }
+                    else
+                    {
+                        cmd += encoder.GetString(buffer);
+                    }
                 }
 
-                if (bytesRead == 0)
-                {
-                    client.Close();
-                }
-
-                string cmd = encoder.GetString(message);
+                Log.I("Command: " + cmd
+                      .Replace("\r", "{CR}")
+                      .Replace("\n", "{LF}"));
                 string cmdRoot = cmd.Split(' ')[0];
 
                 string[] cmdSplit = cmd.Split(' ');
@@ -86,12 +107,32 @@ namespace MissionControl.IO
                     args[ai] = cmdSplit[ai];
                 }
 
-                clientStream.Write(new[] { (byte) 6 }, 0, 1);
+                clientStream.Write(new[] { (byte) Reference.MCS_ACKNOWLEDGE }, 0, 1);
 
-                MissionControlServer.Instance.CommandRegistry.GetMatchingCommand(cmdRoot)
-                    .RunCommand(client, cmd, cmdRoot, args);
+                Command command = new UnknownCommand();
+                try
+                {
+                    command = MissionControlServer.Instance.CommandRegistry.GetMatchingCommand(cmdRoot);
+                }
+                catch { /* ignored */ }
 
-                message = new byte[ushort.MaxValue * 16];
+                string response;
+                try
+                {
+                    response = ResponseBuilder.Build("MC_OK", command.RunCommand(client, cmd, cmdRoot, args));
+                }
+                catch (MCException ex)
+                {
+                    response = ResponseBuilder.Build(ex);
+                }
+                catch (Exception e)
+                {
+                    response = ResponseBuilder.Build(e);
+                }
+
+                byte[] responseBytes = encoder.GetBytes(response);
+
+                clientStream.Write(responseBytes, 0, responseBytes.Length);
             }
         }
     }

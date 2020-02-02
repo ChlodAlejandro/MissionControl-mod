@@ -59,6 +59,7 @@
   <ItemGroup>
     <Compile Include="Commands\Command.cs" />
     <Compile Include="Commands\CommandRegistry.cs" />
+    <Compile Include="Commands\UnknownCommand.cs" />
     <Compile Include="Commands\VesselsCommand.cs" />
     <Compile Include="Configuration\ConfigKey.cs" />
     <Compile Include="Configuration\ConfigManager.cs" />
@@ -83,4 +84,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>copy /Y "E:\Chlod's secret folder\Programming\KSP\MissionControl-mod\src\bin\Debug\MissionControl.dll" "E:\Chlod's secret folder\Kerbal Space Program\1.8 - Copy\GameData"</PostBuildEvent>
+  </PropertyGroup>
 </Project>

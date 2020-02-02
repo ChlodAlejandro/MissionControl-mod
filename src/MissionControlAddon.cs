@@ -42,7 +42,7 @@ namespace MissionControl
             {
                 "networkRequestPermission", new MultiOptionDialog(
                     "mc-permissionrequest",
-                    "For Mission Control to work, it must open up a network port on your computer. Mission Control will lock this port to only work with your computer. If you wish to use this plugin and allow connections from the GUI, you must have this port enabled. Otherwise, this mod will not broadcast any data towards any telemetry receivers. This port will be located at 127.0.0.1:21818\n" +
+                    "For Mission Control to work, it must open up a network port on your computer. Mission Control will lock this port to only work with your computer. If you wish to use this plugin and allow connections from the GUI, you must have this port enabled. Otherwise, this mod will not broadcast any data towards any telemetry receivers. This port will be located at " + ConfigManager.Instance.GetValue<string>("listenerHost") + ":" + ConfigManager.Instance.GetValue<ushort>("listenerPort") + "\n" +
                     "\n" +
                     "There may be security implications from opening a port with your computer. Although the Mission Control development team try to prevent exploitation of this port, be advised that they are not liable for any damage from that port.\n" +
                     "\n" +
@@ -95,16 +95,6 @@ namespace MissionControl
             {
                 Log.I("Permission not granted. Requesting permission...");
                 AskForPermission();
-
-                // if permission not given, die.
-                if (!CheckForPermission())
-                {
-                    Log.I("Permission still not granted. Standing down...");
-                    return;
-                }
-
-                Log.I("Permission granted. Starting server...");
-                AttemptStart();
             }
         }
 
@@ -151,18 +141,23 @@ namespace MissionControl
         {
             PopupDialog dialog = PopupDialog.SpawnPopupDialog(dialogs["networkRequestPermission"], true, HighLogic.UISkin);
 
-            dialog.OnDismiss = () =>
-            {
-                // if permission not given, die.
-                if (!CheckForPermission())
-                {
-                    Log.I("Permission still not granted. Standing down...");
-                    return;
-                }
+            dialog.OnDismiss = PostPermissionRequest;
+        }
 
-                Log.I("Permission granted. Starting server...");
-                AttemptStart();
-            };
+        /// <summary>
+        /// Method to be run after the permission request has been fulfilled or not.
+        /// </summary>
+        private void PostPermissionRequest()
+        {
+            // if permission not given, die.
+            if (!CheckForPermission())
+            {
+                Log.I("Permission still not granted. Standing down...");
+                return;
+            }
+
+            Log.I("Permission granted. Starting server...");
+            AttemptStart();
         }
     }
 }
