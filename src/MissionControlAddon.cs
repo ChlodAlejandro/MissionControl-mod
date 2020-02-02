@@ -1,14 +1,7 @@
-﻿using KSP.IO;
-using MissionControl.Configuration;
+﻿using MissionControl.Configuration;
 using MissionControl.IO;
-using MissionControlCommon.Objects;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Reflection;
-using System.Threading;
 using UnityEngine;
 
 namespace MissionControl
@@ -28,19 +21,8 @@ namespace MissionControl
         /// 
         /// <para>Why are they not inline? I don't know. What I do know is that I don't to see gigantic blocks of code when coding.</para>
         /// </summary>
-        private readonly static Dictionary<string, MultiOptionDialog> dialogs = new Dictionary<string, MultiOptionDialog>()
+        private static readonly Dictionary<string, MultiOptionDialog> dialogs = new Dictionary<string, MultiOptionDialog>()
         {
-            {
-                "httpListenerUnsupported", new MultiOptionDialog(
-                    "mc-unsupported",
-                    "Your PC does not support HttpListener. Please ensure that you are using the correct version of this plugin for your machine. (This plugin requires a Windows machine.)",
-                    "Mission Controller",
-                    HighLogic.UISkin,
-                    new DialogGUIBase[] {
-                            new DialogGUIButton("OK", () => { }, true)
-                    }
-                )
-            },
             {
                 "networkDenyConfirm", new MultiOptionDialog(
                     "mc-denyconfirm",
@@ -99,13 +81,6 @@ namespace MissionControl
             if (ConfigManager.Instance == null)
             {
                 Log.E(new Exception("Configuration failed to load."));
-                return;
-            }
-
-            // check if HttpListener is supported
-            if (!HttpListener.IsSupported)
-            {
-                PopupDialog.SpawnPopupDialog(dialogs["httpListenerUnsupported"], true, HighLogic.UISkin);
                 return;
             }
 

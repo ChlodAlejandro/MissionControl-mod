@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Net;
-using System.Text;
+using System.Net.Sockets;
 using System.Threading;
+using MissionControl.Commands;
+using MissionControl.Configuration;
+using Smooth.Collections;
 
 namespace MissionControl.IO
 {
@@ -13,35 +14,37 @@ namespace MissionControl.IO
     /// <para>This class contains the code for starting and
     /// stopping the Mission Control server. The server
     /// handles the primary functions for handling the
-    /// webhook connection.</para>
+    /// TCP server connection.</para>
     /// </summary>
     public class MissionControlServer
     {
         /// <summary>
         /// Refers to this Mission Control server.
         /// </summary>
-        private static MissionControlServer instance;
+        private static MissionControlServer _instance;
 
         /// <summary>
-        /// The HttpListener for the plugin.
+        /// The TcpListener for the plugin.
         /// </summary>
-        public HttpListener HTTPListener;
+        public TcpListener TcpListener;
         /// <summary>
         /// Defines if this server is accepting connections.
         /// </summary>
         public bool AcceptConnections = true;
+        /// <summary>
+        /// A list of all MCS connections.
+        /// </summary>
+        public List<TcpClient> Clients;
+        /// <summary>
+        /// The command registry to be used for client commands.
+        /// </summary>
+        public CommandRegistry CommandRegistry;
 
 
         /// <summary>
         /// Returns the Mission Control Server attached.
         /// </summary>
-        public static MissionControlServer Instance
-        {
-            get
-            {
-                return instance ?? (instance = new MissionControlServer());
-            }
-        }
+        public static MissionControlServer Instance => _instance ?? (_instance = new MissionControlServer());
 
         /// <summary>
         /// Attempt server start.
@@ -49,9 +52,6 @@ namespace MissionControl.IO
         /// <returns>error code</returns>
         public int Start()
         {
-            if (!HttpListener.IsSupported)
-                return 2;
-
             StartListener();
             return 0;
         }
@@ -61,12 +61,12 @@ namespace MissionControl.IO
         /// </summary>
         private void StartListener()
         {
-            HTTPListener = new HttpListener();
-            HTTPListener.Prefixes.Add("http://127.0.0.1:21818/");
+            TcpListener = new TcpListener(
+                IPAddress.Parse(ConfigManager.Instance.GetValue<string>("listenerHost")),
+                ConfigManager.Instance.GetValue<short>("listenerPort"));
 
-            HTTPListener.Start();
             Log.I("Started the Mission Control Server.");
-            new Thread(new ConnectionListener().ListenForConnections).Start();
+            new Thread(ConnectionListener.Instance.ListenForConnections).Start();
         }
     }
 }

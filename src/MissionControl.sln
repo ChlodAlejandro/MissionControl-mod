@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2018
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29519.87
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MissionControl", "MissionControl\MissionControl.csproj", "{D67F579D-D18D-4B0A-8896-E0C6D4CFF332}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MissionControl", "MissionControl.csproj", "{D67F579D-D18D-4B0A-8896-E0C6D4CFF332}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,6 +20,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {41C47293-979D-43B0-A618-F5A0C9C7925A}
+		SolutionGuid = {D7C64CAA-EB90-4619-9B50-736F7D8BBE6E}
 	EndGlobalSection
 EndGlobal

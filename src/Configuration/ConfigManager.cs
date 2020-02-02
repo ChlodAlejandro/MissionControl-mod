@@ -14,24 +14,20 @@ namespace MissionControl.Configuration
     /// </summary>
     public class ConfigManager
     {
-        private PluginConfiguration pluginConfiguration;
-        private static ConfigManager instance;
-        private readonly Dictionary<string, ConfigKey> keys = new Dictionary<string, ConfigKey>()
+        private readonly PluginConfiguration _pluginConfiguration;
+        private static ConfigManager _instance;
+        private readonly Dictionary<string, ConfigKey> _keys = new Dictionary<string, ConfigKey>()
         {
-            { "networkPermitted", new ConfigKey("networkPermitted", "Network Permitted", false) }
+            { "networkPermitted", new ConfigKey("networkPermitted", "Network Permitted", false) },
+            { "listenerHost", new ConfigKey("listenerHost", "Listener Host", "127.0.0.1") },
+            { "listenerPort", new ConfigKey("listenerPort", "Listener Port", 8417) }
         };
 
-        public static ConfigManager Instance
-        {
-            get
-            {
-                return instance ?? (instance = new ConfigManager());
-            }
-        }
+        public static ConfigManager Instance => _instance ?? (_instance = new ConfigManager());
 
         public ConfigManager()
         {
-            pluginConfiguration = PluginConfiguration.CreateForType<ConfigManager>();
+            _pluginConfiguration = PluginConfiguration.CreateForType<ConfigManager>();
             LoadConfiguration();
         }
 
@@ -39,11 +35,11 @@ namespace MissionControl.Configuration
         {
             try
             {
-                pluginConfiguration.load();
+                _pluginConfiguration.load();
 
-                foreach (ConfigKey key in keys.Values)
+                foreach (ConfigKey key in _keys.Values)
                 {
-                    object configValue = pluginConfiguration[key.Key];
+                    object configValue = _pluginConfiguration[key.Key];
                     if (configValue != null)
                     {
                         key.Value = configValue;
@@ -53,7 +49,7 @@ namespace MissionControl.Configuration
             }
             catch (Exception ex)
             {
-                // Log.e(ex, "An exception occured!");
+                Log.E(ex, "An exception occured!");
             }
         }
 
@@ -61,36 +57,36 @@ namespace MissionControl.Configuration
         {
             try
             {
-                foreach (string key in keys.Keys)
+                foreach (string key in _keys.Keys)
                 {
-                    pluginConfiguration.SetValue(key, keys[key].Value);
+                    _pluginConfiguration.SetValue(key, _keys[key].Value);
                 }
 
-                pluginConfiguration.save();
+                _pluginConfiguration.save();
             }
             catch (Exception ex)
             {
-                // Log.e(ex, "An exception occured!");
+                Log.E(ex, "An exception occured!");
             }
         }
 
         public void SetValue(string key, object value)
         {
-            if (!keys.ContainsKey(key))
+            if (!_keys.ContainsKey(key))
                 throw new Exception("Invalid key.");
             
-            keys[key].Value = value;
+            _keys[key].Value = value;
             SaveConfiguration();
         }
 
         public ConfigKey GetConfigKey(string key)
         {
-            return keys[key];
+            return _keys[key];
         }
 
         public T GetValue<T>(string key)
         {
-            return (T) keys[key].Value;
+            return (T) _keys[key].Value;
         }
 
     }
