@@ -34,6 +34,7 @@ The plugin opens a TcpListener at `127.0.0.1:8417` and awaits commands from the 
 3. Await the command output.
 
 Working commands as of current commit:
+
 | Command | Description |
 | --- | --- |
 | `VESSELS` | Shows all vessels in the game. |
