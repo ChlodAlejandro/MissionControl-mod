@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -7,11 +8,17 @@ namespace MissionControl.Commands
 {
     public class CommandRegistry
     {
+        public CommandRegistry()
+        {
+            Log.I("Initialized command registry. Registering default commands...");
+            RegisterDefaultCommands();
+        }
 
         private readonly Dictionary<string, Command> _commands = new Dictionary<string, Command>();
 
         public Command GetMatchingCommand(string command)
         {
+            if (!_commands.ContainsKey(command.ToLower())) return null;
             try
             {
                 return _commands[command.ToLower()];
@@ -27,6 +34,7 @@ namespace MissionControl.Commands
             foreach (string alias in command.GetTriggers())
             {
                 _commands.Add(alias.ToLower(), command);
+                Log.I("Registered command \"" + alias.ToLower() + "\" with \"" + command.GetType().Name + "\"");
             }
         }
 

@@ -28,8 +28,8 @@ namespace MissionControlCommon.Objects
             return VesselId + " {\n" +
                    "\tName=" + VesselName + "\n" +
                    "\tLoaded=" + VesselLoaded + "\n" +
-                   "\tType=" + VesselType.ToString().Substring(11) + "\n" +
-                   "\tSituation=" + VesselSituation.ToString().Substring(16) + "\n" +
+                   "\tType=" + VesselType + "\n" +
+                   "\tSituation=" + VesselSituation + "\n" +
                    "}";
         }
     }

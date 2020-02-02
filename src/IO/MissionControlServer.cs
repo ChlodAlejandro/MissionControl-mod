@@ -38,7 +38,7 @@ namespace MissionControl.IO
         /// <summary>
         /// The command registry to be used for client commands.
         /// </summary>
-        public CommandRegistry CommandRegistry;
+        public CommandRegistry CommandRegistry = new CommandRegistry();
 
 
         /// <summary>

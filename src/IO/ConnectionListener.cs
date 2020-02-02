@@ -109,12 +109,7 @@ namespace MissionControl.IO
 
                 clientStream.Write(new[] { (byte) Reference.MCS_ACKNOWLEDGE }, 0, 1);
 
-                Command command = new UnknownCommand();
-                try
-                {
-                    command = MissionControlServer.Instance.CommandRegistry.GetMatchingCommand(cmdRoot);
-                }
-                catch { /* ignored */ }
+                Command command = MissionControlServer.Instance.CommandRegistry.GetMatchingCommand(cmdRoot) ?? new UnknownCommand();
 
                 string response;
                 try
