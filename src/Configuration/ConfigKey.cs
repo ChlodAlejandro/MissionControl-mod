@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace MissionControl.Configuration
+﻿namespace MissionControl.Configuration
 {
     public class ConfigKey
     {

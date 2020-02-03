@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
-using System.Text;
+using System.Text.RegularExpressions;
+using System.Xml;
+using System.Xml.Serialization;
 using MissionControl.Objects;
-using MissionControlCommon.Objects;
-using UnityEngine.SceneManagement;
-using UnityEngine.Windows.WebCam;
 
 namespace MissionControl.Commands
 {
@@ -19,8 +18,8 @@ namespace MissionControl.Commands
 
         public override string RunCommand(TcpClient sender, string command, string trigger, string[] arguments)
         {
-            string match = null;
-            string type;
+            string match = ".*";
+            string type = null;
 
             for (int i = 0; i < arguments.Length; i++)
             {
@@ -78,13 +77,17 @@ namespace MissionControl.Commands
 
             if (HighLogic.LoadedSceneIsGame)
             {
-                string vb = "";
-                foreach (Vessel v in FlightGlobals.Vessels)
-                {
-                    vb += new VesselBasic(v) + "\n";
-                }
+                List<VesselBasic> vessels = FlightGlobals.Vessels
+                    .FindAll(v => (type == null ||
+                                  string.Equals(type, v.vesselType.ToString())) && new Regex(match).IsMatch(v.name))
+                    .Select(v => new VesselBasic(v))
+                    .ToList();
 
-                return vb;
+                XmlDocument xmlDocument = new XmlDocument();
+                using (XmlWriter xmlWriter = xmlDocument.CreateNavigator().AppendChild())
+                    (new XmlSerializer(typeof(List<VesselBasic>))).Serialize(xmlWriter, vessels);
+
+                return xmlDocument.ToString();
             }
             else
             {

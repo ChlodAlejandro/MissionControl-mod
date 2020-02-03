@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace MissionControl.Commands
 {
@@ -50,6 +46,7 @@ namespace MissionControl.Commands
         public void RegisterDefaultCommands()
         {
             RegisterCommand(new VesselsCommand());
+            RegisterCommand(new VesselInfoCommand());
         }
 
     }

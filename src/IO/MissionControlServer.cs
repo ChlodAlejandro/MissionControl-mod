@@ -4,7 +4,6 @@ using System.Net.Sockets;
 using System.Threading;
 using MissionControl.Commands;
 using MissionControl.Configuration;
-using Smooth.Collections;
 
 namespace MissionControl.IO
 {

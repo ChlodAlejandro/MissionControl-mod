@@ -1,18 +1,20 @@
 ﻿using System;
-using System.Reflection;
-using UnityEngine;
+using System.Xml;
+using System.Xml.Serialization;
 
-namespace MissionControlCommon.Objects
+namespace MissionControl.Objects
 {
     [Serializable]
     public class VesselBasic
     {
-        
+        private XmlSerializer _xmlSerializer = new XmlSerializer(typeof(VesselBasic));
         public Guid VesselId;
         public string VesselName;
         public bool VesselLoaded;
         public VesselType VesselType;
         public Vessel.Situations VesselSituation;
+
+        public VesselBasic() {}
 
         public VesselBasic(Vessel reference)
         {
@@ -23,14 +25,23 @@ namespace MissionControlCommon.Objects
             VesselSituation = reference.situation;
         }
 
+        public XmlDocument ToXDocument()
+        {
+            XmlDocument xmlDocument = new XmlDocument();
+            using (XmlWriter xmlWriter = xmlDocument.CreateNavigator().AppendChild())
+                _xmlSerializer.Serialize(xmlWriter,
+                    this);
+            return xmlDocument;
+        }
+
+        public VesselBasic FromXElement(XmlDocument xmlDocument)
+        {
+            return _xmlSerializer.Deserialize(xmlDocument.CreateNavigator().ReadSubtree()) as VesselBasic;
+        }
+
         public override string ToString()
         {
-            return VesselId + " {\n" +
-                   "\tName=" + VesselName + "\n" +
-                   "\tLoaded=" + VesselLoaded + "\n" +
-                   "\tType=" + VesselType + "\n" +
-                   "\tSituation=" + VesselSituation + "\n" +
-                   "}";
+            return ToXDocument().ToString();
         }
     }
 }
