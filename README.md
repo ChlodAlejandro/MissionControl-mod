@@ -38,3 +38,4 @@ Working commands as of current commit:
 | Command | Description |
 | --- | --- |
 | `VESSELS` | Shows all vessels in the game. |
+| `VESSELINFO <vessel-guid>` | Shows the vessel information for a given vessel. |
