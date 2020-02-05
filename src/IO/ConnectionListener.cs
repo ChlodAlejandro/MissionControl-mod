@@ -102,9 +102,9 @@ namespace MissionControl.IO
 
                 string[] cmdSplit = cmd.Split(' ');
                 string[] args = new string[cmdSplit.Length - 1];
-                for (int ai = 1; ai < cmdSplit.Length; ai++)
+                for (int ai = 0; ai < args.Length; ai++)
                 {
-                    args[ai] = cmdSplit[ai];
+                    args[ai] = cmdSplit[ai + 1];
                 }
 
                 clientStream.Write(new[] { (byte) Reference.MCS_ACKNOWLEDGE }, 0, 1);

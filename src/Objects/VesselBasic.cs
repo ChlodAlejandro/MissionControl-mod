@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -25,23 +27,24 @@ namespace MissionControl.Objects
             VesselSituation = reference.situation;
         }
 
-        public XmlDocument ToXDocument()
+        public string ToXML()
         {
-            XmlDocument xmlDocument = new XmlDocument();
-            using (XmlWriter xmlWriter = xmlDocument.CreateNavigator().AppendChild())
-                _xmlSerializer.Serialize(xmlWriter,
-                    this);
-            return xmlDocument;
+            string xmlString;
+            using (var stringWriter = new StringWriter())
+            using (XmlWriter xmlWriter = XmlWriter.Create(stringWriter))
+            {
+                new XmlSerializer(typeof(VesselBasic)).Serialize(xmlWriter, this);
+                xmlWriter.Flush();
+                xmlString = stringWriter.GetStringBuilder().ToString();
+            }
+
+            return xmlString;
         }
 
-        public VesselBasic FromXElement(XmlDocument xmlDocument)
-        {
-            return _xmlSerializer.Deserialize(xmlDocument.CreateNavigator().ReadSubtree()) as VesselBasic;
-        }
 
         public override string ToString()
         {
-            return ToXDocument().ToString();
+            return ToXML();
         }
     }
 }

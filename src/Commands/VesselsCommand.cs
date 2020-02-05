@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text.RegularExpressions;
@@ -83,11 +84,16 @@ namespace MissionControl.Commands
                     .Select(v => new VesselBasic(v))
                     .ToList();
 
-                XmlDocument xmlDocument = new XmlDocument();
-                using (XmlWriter xmlWriter = xmlDocument.CreateNavigator().AppendChild())
+                string xmlString = "";
+                using (var stringWriter = new StringWriter())
+                using (XmlWriter xmlWriter = XmlWriter.Create(stringWriter))
+                {
                     (new XmlSerializer(typeof(List<VesselBasic>))).Serialize(xmlWriter, vessels);
+                    xmlWriter.Flush();
+                    xmlString = stringWriter.GetStringBuilder().ToString();
+                }
 
-                return xmlDocument.ToString();
+                return xmlString;
             }
             else
             {
